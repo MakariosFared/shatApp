@@ -1,4 +1,7 @@
+import 'package:chat_app_course/auth/sign_in_screen.dart';
+import 'package:chat_app_course/auth/sign_up_screen.dart';
 import 'package:chat_app_course/chat_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -27,8 +30,24 @@ class MyApp extends StatelessWidget {
         // Notice that the counter didn't reset back to zero; the application
         // is not restarted.
         primarySwatch: Colors.blue,
+
       ),
-      home:  ChatScreen()
+      routes: {
+        ChatScreen.routeName : (ctx) => ChatScreen(),
+        LoginScreen.routeName : (ctx) => LoginScreen(),
+        SignUpScreen.routeName : (ctx) => SignUpScreen(),
+
+    },
+      home: StreamBuilder(stream: FirebaseAuth.instance
+          .idTokenChanges(), builder: (BuildContext context, AsyncSnapshot<User?> user) {
+        if (user.data == null) {
+          print('User is currently signed out!');
+          return LoginScreen();
+        } else {
+          print('User is signed in!');
+          return ChatScreen();
+        }
+      },)
     );
   }
 }
