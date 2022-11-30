@@ -22,16 +22,19 @@ class ChatMsgItem extends StatelessWidget {
             CircleAvatar(child: Text("N",)),
             if(userId != msg.senderId)
             SizedBox(width: 10,),
-            Container(child: Padding(
+            Container(
+             constraints: BoxConstraints(maxWidth: MediaQuery.of(context).size.width  -100),
+              child: Padding(
             padding: const EdgeInsets.all(10.0),
-            child: Column(
+
+            child: Column(crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text("Osama" ,style :TextStyle(color: Colors.white,overflow: TextOverflow.visible,height: 1.5)),
                 SizedBox(height: 5,),
-                Text(msg.body!,style: TextStyle(color: Colors.white,overflow: TextOverflow.visible,height: 1.5),),
+                Text(msg.body!,style: TextStyle(color: Colors.white,height: 1.5,),),
               ],
             ),
-          ),decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),color:userId != msg.senderId ?  Colors.blue : Colors.deepPurpleAccent),),
+          ),decoration: BoxDecoration(borderRadius: BorderRadius.circular(20),color:userId != msg.senderId ?  Colors.blue : Colors.deepPurpleAccent,),),
             if(userId == msg.senderId)
               SizedBox(width: 10,),
             if(userId == msg.senderId)
