@@ -42,7 +42,7 @@ Widget customElevatedButton({
             )
         )),
         child: child,
-        onPressed:() => onPress,
+        onPressed: onPress,
       ));
 }
 
