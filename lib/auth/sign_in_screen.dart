@@ -1,22 +1,20 @@
+import 'package:chat_app_course/auth/auth_provider.dart';
 import 'package:chat_app_course/auth/sign_up_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
-import '../provider/auth_provider.dart';
-import '../shared/shared_component.dart';
-
 class LoginScreen extends StatelessWidget {
   LoginScreen({Key? key}) : super(key: key);
-  TextEditingController nameController = TextEditingController();
+  static const routeName = "login_screen";
+  static const String _title = 'Chat app';
+  TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
-  static const routeName = "login_screen";
-
-  static const String _title = 'Chat app';
 
   @override
   Widget build(BuildContext context) {
+    AuthProvider provider = Provider.of<AuthProvider>(context,listen: false);
     return Scaffold(
       appBar: AppBar(title: const Text(_title)),
       body: Padding(
@@ -42,33 +40,39 @@ class LoginScreen extends StatelessWidget {
                       'Sign in',
                       style: TextStyle(fontSize: 20),
                     )),
-                customTextFormField(
-                  controller: nameController,
-                  label: 'Email',
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "enter user name";
-                    }
-                  },
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  child: TextFormField(
+                    validator: (value) {
+                      if (value!.isEmpty) {
+                        return "enter user name";
+                      }
+                    },
+                    controller: emailController,
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'User Name',
+                    ),
+                  ),
                 ),
-                customTextFormField(
-                  label: "Password",
-                  controller: passwordController,
-                  suffixIcon: IconButton(
-                      onPressed: () {
-                        Provider.of<AuthProvider>(context, listen: false)
-                            .changePasswordVisability();
-                      },
-                      icon: Icon(Icons.remove_red_eye),
-                      splashRadius: 20,
-                      iconSize: 20),
-                  obscure:
-                      Provider.of<AuthProvider>(context, listen: false).visable,
-                  validator: (value) {
-                    if (value!.isEmpty) {
-                      return "enter password";
-                    }
-                  },
+                Container(
+                  padding: const EdgeInsets.fromLTRB(10, 10, 10, 0),
+                  child: TextFormField(
+                    validator: (value) {
+                      if (value!.isEmpty) {}
+                    },
+                    obscureText: provider.visable,
+                    controller: passwordController,
+                    decoration: InputDecoration(
+                      suffixIcon: IconButton(
+                          onPressed: () {},
+                          icon: Icon(Icons.remove_red_eye),
+                          splashRadius: 20,
+                          iconSize: 20),
+                      border: OutlineInputBorder(),
+                      labelText: 'Password',
+                    ),
+                  ),
                 ),
                 TextButton(
                   onPressed: () {},
@@ -76,18 +80,19 @@ class LoginScreen extends StatelessWidget {
                     'Forgot Password',
                   ),
                 ),
-                customElevatedButton(
-                    child: Text("Login"),
-                    onPress: () async {
-                      if (formKey.currentState!.validate()) {
-                        await Provider.of<AuthProvider>(context, listen: false)
-                            .signIn(
-                                email: nameController.text,
+                Container(
+                    height: 50,
+                    padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
+                    child: ElevatedButton(
+                        child: const Text('Login'),
+                        onPressed: () async {
+                          if (formKey.currentState!.validate()) {
+                             await provider.signIn(
+                                email: emailController.text,
                                 password: passwordController.text,
-                                context: context)
-                            .then((value) {});
-                      }
-                    }),
+                                context: context);
+                          }
+                        })),
                 Row(
                   children: <Widget>[
                     const Text('Does not have account?'),
@@ -96,10 +101,9 @@ class LoginScreen extends StatelessWidget {
                         'Sign up',
                         style: TextStyle(fontSize: 20),
                       ),
-                      onPressed: () async {
+                      onPressed: () {
                         //navigate to signup screen
-
-                        await Navigator.pushNamed(
+                        Navigator.pushNamed(
                             context, SignUpScreen.routeName);
                       },
                     )

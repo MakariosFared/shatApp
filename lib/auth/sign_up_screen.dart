@@ -1,17 +1,11 @@
 import 'dart:io';
-
 import 'package:chat_app_course/auth/sign_in_screen.dart';
-import 'package:chat_app_course/chat_screen.dart';
-import 'package:chat_app_course/provider/auth_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
+import 'auth_provider.dart';
 
 class SignUpScreen extends StatelessWidget {
-   SignUpScreen({Key? key}) : super(key: key);
+  SignUpScreen({Key? key}) : super(key: key);
   static const routeName = "register_screen";
 
   static const String _title = 'Chat app';
@@ -20,12 +14,14 @@ class SignUpScreen extends StatelessWidget {
 
   TextEditingController passwordController = TextEditingController();
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
+
   @override
   Widget build(BuildContext context) {
-    AuthProvider prov = Provider.of<AuthProvider>(context,listen: false);
+    AuthProvider provider = Provider.of<AuthProvider>(context, listen: false);
+
     return Scaffold(
-      appBar: AppBar(title: const Text(_title), backwardsCompatibility: false),
-      body:  Padding(
+      appBar: AppBar(title: const Text(_title)),
+      body: Padding(
           padding: const EdgeInsets.all(10),
           child: Form(
             key: formKey,
@@ -44,58 +40,25 @@ class SignUpScreen extends StatelessWidget {
                 Center(
                   child: GestureDetector(
                       onTap: () {
-                        Provider.of<AuthProvider>(context).pickImage();
+                        provider.pickImage();
                       },
-                      child: CircleAvatar(
-                        radius: 50,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(
-                                  color: Colors.blue, width: 2)),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(200),
-
-                            clipBehavior: Clip.antiAlias,
-
+                      child: Container(
+                        decoration: const BoxDecoration(
+                            shape: BoxShape.circle, color: Colors.grey),
+                        height: 45,
+                        width: 45,
+                        child: ClipRect(
+                            clipBehavior: Clip.hardEdge,
                             child: Consumer<AuthProvider>(
-                              builder: (context, provider, child) {
-                                return Image(
-                                    width: 100,
-                                    height: 100,
-                                    image: provider.chosenFile != null
-                                        ? FileImage(File(provider.chosenFile!.path))
-                                    as ImageProvider
-                                        : AssetImage(
-                                        "assets/images/default-user-image.png")
-                                    as ImageProvider,
-                                    fit: BoxFit.cover);
-                              },
-                            ),
-                          ),
-                        ),
-                        // backgroundImage: choosenFile != null
-                        //             ? FileImage(File(choosenFile!.path))
-                        //                 as ImageProvider
-                        //             : AssetImage(
-                        //                     "assets/images/default-user-image.png")
-                        //                 as ImageProvider,
-                        // backgroundImage: choosenFile != null
-                        //     ? FileImage(File(choosenFile!.path))
-                        // as ImageProvider
-                        //     : AssetImage(
-                        //     "assets/images/default-user-image.png")
-                        // as ImageProvider,
-                        // child: ClipRRect(
-                        // clipBehavior: Clip.hardEdge,
-                        // child: Image(
-                        //     fit: BoxFit.contain,
-                        //     image: choosenFile != null
-                        //         ? FileImage(File(choosenFile!.path))
-                        //     as ImageProvider
-                        //         : AssetImage(
-                        //         "assets/images/default-user-image.png")
-                        //     as ImageProvider)),
+                              builder: (BuildContext context, value, Widget? child) {
+                              return Image(
+                                  fit: BoxFit.cover,
+                                  image: provider.choosenFile != null
+                                      ? FileImage(
+                                          File(provider.choosenFile!.path))
+                                      : const AssetImage("assets/image/11.jpg")
+                                          as ImageProvider);}
+                            )),
                       )),
                 ),
                 Container(
@@ -141,17 +104,17 @@ class SignUpScreen extends StatelessWidget {
                     validator: (value) {
                       if (value!.isEmpty) {}
                     },
-                    obscureText: prov.visable,
+                    obscureText: provider.visable,
                     controller: passwordController,
                     decoration: InputDecoration(
                       suffixIcon: IconButton(
                           onPressed: () {
-                            prov.changePasswordVisability();
+                            provider.changeobscure();
                           },
-                          icon: Icon(Icons.remove_red_eye),
+                          icon: const Icon(Icons.remove_red_eye),
                           splashRadius: 20,
                           iconSize: 20),
-                      border: OutlineInputBorder(),
+                      border: const OutlineInputBorder(),
                       labelText: 'Password',
                     ),
                   ),
@@ -166,15 +129,18 @@ class SignUpScreen extends StatelessWidget {
                     height: 50,
                     padding: const EdgeInsets.fromLTRB(10, 0, 10, 0),
                     child: ElevatedButton(
-                      child:
-                      prov.isLoading ? CircularProgressIndicator() : Text('Login'),
-                      onPressed: () async {
-                        if (formKey.currentState!.validate()) {
-                          prov.signUp(email: emailController.text, password: passwordController.text, context: context,username: nameController.text);
-                        }
-
-                      },
-                    )),
+                        child: provider.isLoading
+                            ? const CircularProgressIndicator()
+                            : const Text('Sign up'),
+                        onPressed: () async {
+                          if (formKey.currentState!.validate()) {
+                            provider.signup(
+                                email: emailController.text,
+                                password: passwordController.text,
+                                context: context,
+                                name: nameController.text);
+                          }
+                        })),
                 Row(
                   children: <Widget>[
                     const Text('Does not have account?'),
@@ -185,7 +151,8 @@ class SignUpScreen extends StatelessWidget {
                       ),
                       onPressed: () {
                         //signup screen
-                        Navigator.pop(context);
+                        Navigator.pushNamed(
+                            context, LoginScreen.routeName);
                       },
                     )
                   ],
@@ -197,8 +164,3 @@ class SignUpScreen extends StatelessWidget {
     );
   }
 }
-
-
-
-
-
