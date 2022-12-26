@@ -5,7 +5,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../chat_screen.dart';
+import '../screens/chat_screen.dart';
 
 class AuthProvider with ChangeNotifier{
 
